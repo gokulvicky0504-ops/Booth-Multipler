@@ -1,0 +1,37 @@
+module multiplier_booth(
+    input signed [7:0] A,
+    input signed [7:0] B,
+    output reg signed [15:0] P
+);
+
+integer i;
+
+reg signed [15:0] AC;
+reg signed [7:0] Q;
+reg Q_1;
+reg signed [15:0] M;
+
+always @(*) begin
+
+    AC = 0;
+    Q = B;
+    Q_1 = 0;
+    M = {{8{A[7]}}, A};
+
+    for (i=0; i<8; i=i+1) begin
+
+        case ({Q[0], Q_1})
+            2'b01: AC = AC + M;
+            2'b10: AC = AC - M;
+        endcase
+
+        // Arithmetic right shift
+        {AC, Q, Q_1} = $signed({AC, Q, Q_1}) >>> 1;
+
+    end
+
+    P = {AC[7:0], Q};
+
+end
+
+endmodule
